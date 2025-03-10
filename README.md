@@ -9,7 +9,7 @@ Dataset yang digunakan diambil dari:
 
 ### **Fitur-Fitur Utama dalam Dataset:**
 - `season` : Musim (1: Winter, 2: Spring, 3: Summer, 4: Fall)
-- `weathersit` : Kondisi cuaca (1: Cerah, 2: Berawan, 3: Hujan, 4: Badai)
+- `weathersit` : Kondisi cuaca (1: clear, few clouds, partly cloudy, 2: Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist, 3: Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds)
 - `cnt` : Total jumlah penyewaan sepeda
 - `temp`, `hum`, `windspeed` : Variabel cuaca lainnya
 
