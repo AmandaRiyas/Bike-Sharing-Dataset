@@ -17,7 +17,7 @@ st.title('Bike Sharing Dashboard')
 
 # Sidebar
 st.sidebar.header("Dashboard Bike Sharing")
-selected_viz = st.sidebar.selectbox("Pilih Visualisasi", ["Tampilkan Data", "Statistik Data", "Pengaruh Cuaca", "Pengaruh Musim", "Kesimpulan Akhir"])
+selected_viz = st.sidebar.selectbox("Pilih Visualisasi", ["Tampilkan Data", "Statistik Data", "Pengaruh Cuaca", "Pengaruh Musim", "Kesimpulan"])
 
 # Tampilkan Data
 if selected_viz == "Tampilkan Data":
