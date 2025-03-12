@@ -5,7 +5,7 @@ Proyek ini menganalisis dataset penyewaan sepeda menggunakan **Bike Sharing Data
 
 ## Dataset
 Dataset yang digunakan diambil dari:
-[https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/day.csv](https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/day.csv)
+(https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/day.csv)
 
 ### **Fitur-Fitur Utama dalam Dataset:**
 - `season` : Musim (1: Winter, 2: Spring, 3: Summer, 4: Fall)
@@ -33,8 +33,9 @@ streamlit run dashboard.py
 - **Statistik Data** → Menampilkan ringkasan statistik deskriptif.
 - **Pengaruh Cuaca** → Visualisasi hubungan antara kondisi cuaca dan jumlah penyewaan sepeda.
 - **Pengaruh Musim** → Visualisasi hubungan antara musim dan jumlah penyewaan sepeda.
+- **Kesimpulan**     → Menampilkan kesimpulan analisis data
 
-## Teknologi yang Digunakan
+## Library yang Digunakan
 - **Python**
 - **Pandas & NumPy**
 - **Matplotlib & Seaborn**
