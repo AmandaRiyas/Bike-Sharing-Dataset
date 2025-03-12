@@ -77,6 +77,5 @@ elif selected_viz == "Pengaruh Musim":
 elif selected_viz == "Kesimpulan":
     st.write("## Kesimpulan")
     st.write(
-        "**Kesimpulan:**\n"
         " Cuaca dan musim memiliki pengaruh terhadap banyaknya penyewa sepeda, namun masih ada kemungkinan variabel lain yang memengaruhi banyaknya penyewa sepeda\n"
     )
