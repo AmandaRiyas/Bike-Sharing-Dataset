@@ -71,7 +71,7 @@ elif selected_viz == "Pengaruh Musim":
     ax.set_ylabel("Jumlah Penyewaan")
     st.pyplot(fig)
     
-    st.write("**Analisis:** Dari diagram garis pada jawaban kedua terlihat bahwa pada season 1 (spring) ke season 2 (summer) ke season 3 (fall) terus mengalami peningkatan, namun pada season 4 (winter) mengalami penurunan penyewaan sepeda. Kemudian pada boxplot dapat diketahui informasi distribusi data musim, distribusi terluas adalah musim kategori 4, disusul kategori 2 dan 3 yang luasnya hampir mirip dan yang paling sempit adalah distribusi musim kategori 1, pada boxplot tersebut hanya ada sedikit outlier sehingga penyewaan sudah termasuk konsisten.")
+    st.write("**Analisis:** Dari diagram garis terlihat bahwa pada season 1 (spring) ke season 2 (summer) ke season 3 (fall) terus mengalami peningkatan, namun pada season 4 (winter) mengalami penurunan penyewaan sepeda. Kemudian pada boxplot dapat diketahui informasi distribusi data musim, distribusi terluas adalah musim kategori 4, disusul kategori 2 dan 3 yang luasnya hampir mirip dan yang paling sempit adalah distribusi musim kategori 1, pada boxplot tersebut hanya ada sedikit outlier sehingga penyewaan sudah termasuk konsisten.")
 
 # Kesimpulan
 elif selected_viz == "Kesimpulan":
