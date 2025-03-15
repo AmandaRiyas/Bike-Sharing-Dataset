@@ -1,81 +1,49 @@
 import streamlit as st
 import pandas as pd
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 
-# Load dataset
-@st.cache_data
-def load_data():
-    url = "https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/day.csv"
-    df = pd.read_csv(url)
-    return df
+# Load dataset from GitHub URL
+url = "https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/data/day.csv"
+df = pd.read_csv(url)
 
-data = load_data()
+df['dteday'] = pd.to_datetime(df['dteday'])  # Convert to datetime
 
-# Set title
-st.title('Bike Sharing Dashboard')
+# Streamlit App
+st.title("Bike Sharing Dashboard")
+st.sidebar.header("Filter Data")
 
-# Sidebar
-st.sidebar.header("Dashboard Bike Sharing")
-selected_viz = st.sidebar.selectbox("Pilih Visualisasi", ["Tampilkan Data", "Statistik Data", "Pengaruh Cuaca", "Pengaruh Musim", "Kesimpulan"])
+# Sidebar filters
+selected_year = st.sidebar.selectbox("Select Year", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
+selected_season = st.sidebar.multiselect("Select Season", df['season'].unique(), default=df['season'].unique())
 
-# Tampilkan Data
-if selected_viz == "Tampilkan Data":
-    st.write("## Data Penyewaan Sepeda")
-    st.dataframe(data.head())
+df_filtered = df[(df['yr'] == selected_year) & (df['season'].isin(selected_season))]
 
-# Statistik Data
-elif selected_viz == "Statistik Data":
-    st.write("## Statistik Data")
-    st.write(data.describe())
+# Line Chart - Rentals Over Time
+st.subheader("Total Bike Rentals Over Time")
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.plot(df_filtered['dteday'], df_filtered['cnt'], marker='o', linestyle='-', color='b')
+ax.set_xlabel("Date")
+ax.set_ylabel("Total Rentals")
+ax.set_title("Bike Rentals Trend")
+st.pyplot(fig)
 
-# Pengaruh Cuaca
-elif selected_viz == "Pengaruh Cuaca":
-    st.write("## Pengaruh Cuaca terhadap Penyewaan Sepeda")
-    
-    # Diagram Garis Cuaca
-    garis_cuaca = data.groupby('weathersit')['cnt'].mean().reset_index()
-    fig, ax = plt.subplots(figsize=(8,5))
-    sns.lineplot(x=garis_cuaca["weathersit"], y=garis_cuaca["cnt"], marker="o", linewidth=2)
-    ax.set_title("Hubungan Cuaca dengan Penyewa Sepeda")
-    ax.set_xlabel("Weathersit")
-    ax.set_ylabel("Jumlah Penyewa")
-    st.pyplot(fig)
-    
-    # Boxplot Cuaca
-    fig, ax = plt.subplots()
-    sns.boxplot(x=data['weathersit'], y=data['cnt'], ax=ax)
-    ax.set_xlabel("Cuaca")
-    ax.set_ylabel("Jumlah Penyewaan")
-    st.pyplot(fig)
-    
-    st.write("**Analisis:** Dari diagram garis terlihat bahwa semakin besar kategori garis menurun, artinya pada cuaca dengan kategori 1(clear, few clouds, partly cloudy) banyak yang menyewa sepeda, namun pada cuaca kategori ke 2 (Mist + Cloudy, Mist + Broken clouds, Mist + Few clouds, Mist) mulai menurun, dan yang paling rendah pada cuaca pada kategori 3 (Light Snow, Light Rain + Thunderstorm + Scattered clouds, Light Rain + Scattered clouds). Kemudian pada boxplot dapat diketahui informasi distribusi data cuaca kategori 1 luas terbukti dari rentangnya yang cukup panjang, untuk kategori cuaca kategori 2 juga luas tapi masih di bawah kategori 1, dan distribusi cuaca kategori 3 paling rendah diantara kategori lain terbukti dari rentang yang lebih pendek dari kategori 1 maupun 2.")
+# Bar Chart - Rentals by Category
+st.subheader("Total Rentals by Category")
+categories = ['weathersit', 'weekday', 'workingday', 'holiday', 'season']
+selected_category = st.selectbox("Select Category", categories)
 
-# Pengaruh Musim
-elif selected_viz == "Pengaruh Musim":
-    st.write("## Pengaruh Musim terhadap Penyewaan Sepeda")
-    
-    # Diagram Garis Musim
-    garis_musim = data.groupby('season')['cnt'].mean().reset_index()
-    fig, ax = plt.subplots(figsize=(8,5))
-    sns.lineplot(x=garis_musim["season"], y=garis_musim["cnt"], marker="o", linewidth=2)
-    ax.set_title("Pengaruh Perbedaan Musim dengan Penyewaan Sepeda")
-    ax.set_xlabel("Season")
-    ax.set_ylabel("Jumlah Penyewa")
-    st.pyplot(fig)
-    
-    # Boxplot Musim
-    fig, ax = plt.subplots()
-    sns.boxplot(x=data['season'], y=data['cnt'], ax=ax)
-    ax.set_xlabel("Musim")
-    ax.set_ylabel("Jumlah Penyewaan")
-    st.pyplot(fig)
-    
-    st.write("**Analisis:** Dari diagram garis terlihat bahwa pada season 1 (spring) ke season 2 (summer) ke season 3 (fall) terus mengalami peningkatan, namun pada season 4 (winter) mengalami penurunan penyewaan sepeda. Kemudian pada boxplot dapat diketahui informasi distribusi data musim, distribusi terluas adalah musim kategori 4, disusul kategori 2 dan 3 yang luasnya hampir mirip dan yang paling sempit adalah distribusi musim kategori 1, pada boxplot tersebut hanya ada sedikit outlier sehingga penyewaan sudah termasuk konsisten.")
+grouped_data = df_filtered.groupby(selected_category)['cnt'].sum().reset_index()
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.bar(grouped_data[selected_category], grouped_data['cnt'], color='skyblue')
+ax.set_xlabel(selected_category.capitalize())
+ax.set_ylabel("Total Rentals")
+ax.set_title(f"Total Rentals by {selected_category.capitalize()}")
+st.pyplot(fig)
 
-# Kesimpulan
-elif selected_viz == "Kesimpulan":
-    st.write("## Kesimpulan")
-    st.write(
-        " Cuaca dan musim memiliki pengaruh terhadap banyaknya penyewa sepeda, namun masih ada kemungkinan variabel lain yang memengaruhi banyaknya penyewa sepeda\n"
-    )
+st.write("Data Source: Bike Sharing Dataset")
+
+# Conclusion Section
+st.subheader("Kesimpulan")
+st.write("- Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season yaitu penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).")
+st.write("- Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa pengaruh dari atempt, hum, windspeed terhadap banyaknya penyewa sepeda yaitu atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif, artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.")
