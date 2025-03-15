@@ -8,15 +8,16 @@ url = "https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/h
 df = pd.read_csv(url)
 
 df['dteday'] = pd.to_datetime(df['dteday'])  # Convert to datetime
+df['month'] = df['dteday'].dt.month  # Extract month
 
 # Streamlit App
 st.title("Bike Sharing Dashboard")
 st.sidebar.header("Filter Data")
 
 # Sidebar filters
-selected_year = st.sidebar.selectbox("Select Year", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
+selected_month = st.sidebar.selectbox("Select Month", range(1, 13), format_func=lambda x: f"{x:02d}")
 
-df_filtered = df[df['yr'] == selected_year]
+df_filtered = df[df['month'] == selected_month]
 
 # Line Chart - Rentals Over Time
 st.subheader("Total Bike Rentals Over Time")
