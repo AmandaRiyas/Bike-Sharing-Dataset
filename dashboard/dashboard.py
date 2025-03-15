@@ -28,17 +28,24 @@ ax.set_ylabel("Total Rentals")
 ax.set_title("Bike Rentals Trend")
 st.pyplot(fig)
 
-# Bar Chart - Rentals by Category
+# Line Chart - Rentals by Category
 st.subheader("Total Rentals by Category")
 categories = ['weathersit', 'weekday', 'workingday', 'holiday', 'season']
 selected_category = st.selectbox("Select Category", categories)
 
 grouped_data = df_filtered.groupby(selected_category)['cnt'].sum().reset_index()
 fig, ax = plt.subplots(figsize=(8, 5))
-ax.bar(grouped_data[selected_category], grouped_data['cnt'], color='skyblue')
+ax.plot(grouped_data[selected_category], grouped_data['cnt'], marker='o', linestyle='-', color='g')
 ax.set_xlabel(selected_category.capitalize())
 ax.set_ylabel("Total Rentals")
 ax.set_title(f"Total Rentals by {selected_category.capitalize()}")
+st.pyplot(fig)
+
+# Heatmap - Correlation Matrix
+st.subheader("Correlation Heatmap")
+fig, ax = plt.subplots(figsize=(10, 6))
+corr_matrix = df_filtered[['cnt', 'temp', 'atemp', 'hum', 'windspeed']].corr()
+sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
 st.pyplot(fig)
 
 st.write("Data Source: Bike Sharing Dataset")
