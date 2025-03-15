@@ -15,9 +15,8 @@ st.sidebar.header("Filter Data")
 
 # Sidebar filters
 selected_year = st.sidebar.selectbox("Select Year", df['yr'].unique(), format_func=lambda x: f"{2011 + x}")
-selected_season = st.sidebar.multiselect("Select Season", df['season'].unique(), default=df['season'].unique())
 
-df_filtered = df[(df['yr'] == selected_year) & (df['season'].isin(selected_season))]
+df_filtered = df[df['yr'] == selected_year]
 
 # Line Chart - Rentals Over Time
 st.subheader("Total Bike Rentals Over Time")
@@ -47,8 +46,6 @@ fig, ax = plt.subplots(figsize=(10, 6))
 corr_matrix = df_filtered[['cnt', 'temp', 'atemp', 'hum', 'windspeed']].corr()
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
 st.pyplot(fig)
-
-st.write("Data Source: Bike Sharing Dataset")
 
 # Conclusion Section
 st.subheader("Kesimpulan")
