@@ -2,53 +2,99 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from scipy import stats
 
-# Load dataset from GitHub URL
-url = "https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/data/day.csv"
-df = pd.read_csv(url)
+# Load data dari link
+MNDday_df = pd.read_csv('https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/data/day.csv')
 
-df['dteday'] = pd.to_datetime(df['dteday'])  # Convert to datetime
-df['month'] = df['dteday'].dt.month  # Extract month
+# Filtering data
+MNDday_df['dteday'] = pd.to_datetime(MNDday_df['dteday'])
+monthly_rentals_df = MNDday_df.resample(rule='M', on='dteday').agg({
+    "cnt": "sum",
+    "weathersit": lambda x: stats.mode(x, keepdims=True)[0][0],
+    "weekday": lambda x: stats.mode(x, keepdims=True)[0][0],
+    "workingday": lambda x: stats.mode(x, keepdims=True)[0][0],
+    "holiday": lambda x: stats.mode(x, keepdims=True)[0][0],
+    "season": lambda x: stats.mode(x, keepdims=True)[0][0]
+})
+monthly_rentals_df.index = monthly_rentals_df.index.strftime('%Y-%m')
+monthly_rentals_df = monthly_rentals_df.reset_index()
+monthly_rentals_df.rename(columns={
+    "dteday": "month",
+    "cnt": "total_rentals"
+}, inplace=True)
 
-# Streamlit App
-st.title("Bike Sharing Dashboard")
-st.sidebar.header("Filter Data")
+# Mulai Streamlit
+st.title("Dashboard Analisis Penyewaan Sepeda 🚲")
 
-# Sidebar filters
-selected_month = st.sidebar.selectbox("Select Month", range(1, 13), format_func=lambda x: f"{x:02d}")
+# Sidebar filter
+selected_season = st.sidebar.selectbox("Pilih Musim:", monthly_rentals_df['season'].unique())
+selected_weather = st.sidebar.selectbox("Pilih Cuaca:", monthly_rentals_df['weathersit'].unique())
 
-df_filtered = df[df['month'] == selected_month]
+# Filter data
+filtered_data = monthly_rentals_df[
+    (monthly_rentals_df['season'] == selected_season) &
+    (monthly_rentals_df['weathersit'] == selected_weather)
+]
 
-# Line Chart - Rentals Over Time
-st.subheader("Total Bike Rentals Over Time")
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(df_filtered['dteday'], df_filtered['cnt'], marker='o', linestyle='-', color='b')
-ax.set_xlabel("Date")
-ax.set_ylabel("Total Rentals")
-ax.set_title("Bike Rentals Trend")
+# Tampilkan hasil
+st.metric("Total Penyewaan", int(filtered_data['total_rentals'].sum()))
+st.metric("Rata-rata Penyewaan", round(filtered_data['total_rentals'].mean(), 2))
+
+st.dataframe(filtered_data[['month', 'season', 'weathersit', 'weekday', 'workingday', 'holiday', 'total_rentals']])
+
+# Tambahkan visualisasi
+st.bar_chart(filtered_data[['weekday', 'total_rentals']].set_index('weekday'))
+
+# Diagram Garis per kategori
+st.subheader("Tren Penyewaan Sepeda Berdasarkan Kategori")
+fig, axes = plt.subplots(3, 2, figsize=(12, 12))
+axes = axes.flatten()
+categorical_vars = ["weathersit", "weekday", "workingday", "holiday", "season"]
+category_labels = {
+    "weathersit": {1: "Cerah", 2: "Berawan", 3: "Hujan"},
+    "season": {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"},
+    "workingday": {0: "Libur", 1: "Kerja"},
+    "holiday": {0: "Biasa", 1: "Libur"},
+    "weekday": {0: "Senin", 1: "Selasa", 2: "Rabu", 3: "Kamis", 4: "Jumat", 5: "Sabtu", 6: "Minggu"}
+}
+
+for i, var in enumerate(categorical_vars):
+    grouped_data = monthly_rentals_df.groupby(var)["total_rentals"].sum().reset_index()
+    if var in category_labels:
+        grouped_data[var] = grouped_data[var].replace(category_labels[var])
+
+    axes[i].plot(grouped_data[var], grouped_data["total_rentals"], marker='o', linestyle='-', color='b')
+    axes[i].set_title(f"Total Rentals by {var.capitalize()}")
+    axes[i].set_xlabel(var.capitalize())
+    axes[i].set_ylabel("Total Rentals")
+if len(categorical_vars) % 2 != 0:
+    fig.delaxes(axes[-1])
+plt.tight_layout()
 st.pyplot(fig)
 
-# Line Chart - Rentals by Category
-st.subheader("Total Rentals by Category")
-categories = ['weathersit', 'weekday', 'workingday', 'holiday', 'season']
-selected_category = st.selectbox("Select Category", categories)
+# Heatmap
+st.subheader("Heatmap Penyewaan Berdasarkan Musim dan Cuaca")
+correlation_matrix = monthly_rentals_df[['total_rentals', 'season', 'weathersit', 'weekday', 'workingday', 'holiday']].corr()
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+plt.title("Matriks Korelasi Variabel")
+st.pyplot(plt)
 
-grouped_data = df_filtered.groupby(selected_category)['cnt'].sum().reset_index()
-fig, ax = plt.subplots(figsize=(8, 5))
-ax.plot(grouped_data[selected_category], grouped_data['cnt'], marker='o', linestyle='-', color='g')
-ax.set_xlabel(selected_category.capitalize())
-ax.set_ylabel("Total Rentals")
-ax.set_title(f"Total Rentals by {selected_category.capitalize()}")
-st.pyplot(fig)
+# Barplot tambahan
+plt.figure(figsize=(8, 5))
+sns.barplot(data=monthly_rentals_df.reset_index(), x='season', y='total_rentals', palette='coolwarm')
+plt.title("Rata-rata Penyewaan Berdasarkan Kategori Suhu")
+plt.xlabel("Kategori Suhu")
+plt.ylabel("Rata-rata Jumlah Penyewa")
+plt.xticks(rotation=20)
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+st.pyplot(plt)
 
-# Heatmap - Correlation Matrix
-st.subheader("Correlation Heatmap")
-fig, ax = plt.subplots(figsize=(10, 6))
-corr_matrix = df_filtered[['cnt', 'temp', 'atemp', 'hum', 'windspeed']].corr()
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-st.pyplot(fig)
-
-# Conclusion Section
+# Kesimpulan
 st.subheader("Kesimpulan")
-st.write("- Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season yaitu penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).")
-st.write("- Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa pengaruh dari atempt, hum, windspeed terhadap banyaknya penyewa sepeda yaitu atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif, artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.")
+st.markdown("""
+- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season yaitu penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).
+
+- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pengaruh dari atempt, hum, windspeed terhadap banyaknya penyewa sepeda yaitu atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif, artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.
+""")
