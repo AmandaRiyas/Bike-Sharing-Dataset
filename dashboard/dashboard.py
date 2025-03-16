@@ -52,7 +52,7 @@ category_labels = {
     "season": {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
 }
 
-# Bar Chart - Rentals by Category
+# Line Chart - Rentals by Category
 st.subheader("Total Penyewaan Berdasarkan Kategori")
 categories = ['weathersit', 'weekday', 'workingday', 'holiday', 'season']
 
@@ -64,7 +64,7 @@ for i, var in enumerate(categories):
     if var in category_labels:
         grouped_data[var] = grouped_data[var].replace(category_labels[var])
     
-    axes[i].bar(grouped_data[var], grouped_data['cnt'], color='skyblue')
+    axes[i].plot(grouped_data[var], grouped_data['cnt'], marker='o', linestyle='-', color='green')
     axes[i].set_title(f"Total Penyewaan Berdasarkan {var.capitalize()}")
     axes[i].set_xlabel(var.capitalize())
     axes[i].set_ylabel("Total Penyewa")
