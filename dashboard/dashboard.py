@@ -63,6 +63,8 @@ for i, var in enumerate(categories):
     grouped_data = filtered_data.groupby(var)['cnt'].sum().reset_index()
     if var in category_labels:
         grouped_data[var] = grouped_data[var].replace(category_labels[var])
+        all_categories = pd.DataFrame({var: list(category_labels[var].values())})
+        grouped_data = pd.merge(all_categories, grouped_data, on=var, how='left').fillna(0)
     
     axes[i].plot(grouped_data[var], grouped_data['cnt'], marker='o', linestyle='-', color='green')
     axes[i].set_title(f"Total Penyewaan Berdasarkan {var.capitalize()}")
