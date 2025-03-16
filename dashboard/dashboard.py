@@ -9,6 +9,7 @@ MNDday_df = pd.read_csv('https://raw.githubusercontent.com/AmandaRiyas/Bike-Shar
 
 # Filtering data
 MNDday_df['dteday'] = pd.to_datetime(MNDday_df['dteday'])
+MNDday_df['month'] = MNDday_df['dteday'].dt.strftime('%B')
 monthly_rentals_df = MNDday_df.resample(rule='M', on='dteday').agg({
     "cnt": "sum",
     "weathersit": lambda x: stats.mode(x, keepdims=True)[0][0],
@@ -39,14 +40,16 @@ category_labels = {
 for col, mapping in category_labels.items():
     monthly_rentals_df[col] = monthly_rentals_df[col].replace(mapping)
 
+selected_month = st.sidebar.selectbox("Pilih Bulan:", MNDday_df['month'].unique())
 selected_season = st.sidebar.selectbox("Pilih Musim:", monthly_rentals_df['season'].unique())
 selected_weather = st.sidebar.selectbox("Pilih Cuaca:", monthly_rentals_df['weathersit'].unique())
 selected_weekday = st.sidebar.selectbox("Pilih Hari:", ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"])
-selected_holiday = st.sidebar.selectbox("Pilih Status Libur:", monthly_rentals_df['holiday'].unique())
-selected_workingday = st.sidebar.selectbox("Pilih Status Hari Kerja:", monthly_rentals_df['workingday'].unique())
+selected_holiday = st.sidebar.selectbox("Pilih Status Libur:", ["Libur", "Tidak Libur"])
+selected_workingday = st.sidebar.selectbox("Pilih Status Hari Kerja:", ["Kerja", "Tidak Kerja"])
 
 # Filter data
 filtered_data = monthly_rentals_df[
+    (MNDday_df['month'] == selected_month) &
     (monthly_rentals_df['season'] == selected_season) &
     (monthly_rentals_df['weathersit'] == selected_weather) &
     (monthly_rentals_df['weekday'] == selected_weekday) &
@@ -83,24 +86,6 @@ if len(categorical_vars) % 2 != 0:
     fig.delaxes(axes[-1])
 plt.tight_layout()
 st.pyplot(fig)
-
-# Heatmap
-st.subheader("Heatmap Penyewaan Berdasarkan Musim dan Cuaca")
-correlation_matrix = monthly_rentals_df[['total_rentals', 'season', 'weathersit']].corr(numeric_only=True)
-plt.figure(figsize=(8, 6))
-sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-plt.title("Matriks Korelasi Variabel")
-st.pyplot(plt)
-
-# Barplot tambahan
-plt.figure(figsize=(8, 5))
-sns.barplot(data=monthly_rentals_df.reset_index(), x='season', y='total_rentals', palette='coolwarm')
-plt.title("Rata-rata Penyewaan Berdasarkan Kategori Suhu")
-plt.xlabel("Kategori Suhu")
-plt.ylabel("Rata-rata Jumlah Penyewa")
-plt.xticks(rotation=20)
-plt.grid(axis="y", linestyle="--", alpha=0.7)
-st.pyplot(plt)
 
 # Kesimpulan
 st.subheader("Kesimpulan")
