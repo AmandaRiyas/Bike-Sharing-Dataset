@@ -32,13 +32,13 @@ st.sidebar.header("Filter Data")
 # Sidebar filters
 selected_month = st.sidebar.selectbox("Pilih Bulan", monthly_rentals_df['month'].unique())
 
-filtered_data = monthly_rentals_df[monthly_rentals_df['month'] == selected_month]
+filtered_data = MNDday_df[MNDday_df['dteday'].dt.strftime('%Y-%m') == selected_month]
 
 # Line Chart - Total Rentals Over Time
 st.subheader("Total Penyewaan Sepeda Seiring Waktu")
 fig, ax = plt.subplots(figsize=(10, 5))
-ax.plot(filtered_data['month'], filtered_data['total_rentals'], marker='o', linestyle='-', color='b')
-ax.set_xlabel("Bulan")
+ax.plot(filtered_data['dteday'], filtered_data['cnt'], marker='o', linestyle='-', color='b')
+ax.set_xlabel("Tanggal")
 ax.set_ylabel("Total Penyewa")
 ax.set_title("Tren Penyewaan Sepeda")
 st.pyplot(fig)
@@ -60,11 +60,11 @@ fig, axes = plt.subplots(3, 2, figsize=(12, 12))
 axes = axes.flatten()
 
 for i, var in enumerate(categories):
-    grouped_data = monthly_rentals_df.groupby(var)['total_rentals'].sum().reset_index()
+    grouped_data = filtered_data.groupby(var)['cnt'].sum().reset_index()
     if var in category_labels:
         grouped_data[var] = grouped_data[var].replace(category_labels[var])
     
-    axes[i].plot(grouped_data[var], grouped_data['total_rentals'], marker='o', linestyle='-', color='green')
+    axes[i].plot(grouped_data[var], grouped_data['cnt'], marker='o', linestyle='-', color='green')
     axes[i].set_title(f"Total Penyewaan Berdasarkan {var.capitalize()}")
     axes[i].set_xlabel(var.capitalize())
     axes[i].set_ylabel("Total Penyewa")
@@ -79,14 +79,14 @@ st.pyplot(fig)
 # Heatmap - Correlation Matrix
 st.subheader("Heatmap Korelasi")
 fig, ax = plt.subplots(figsize=(10, 6))
-corr_matrix = MNDday_df[['cnt', 'temp', 'atemp', 'hum', 'windspeed']].corr()
+corr_matrix = filtered_data[['cnt', 'temp', 'atemp', 'hum', 'windspeed']].corr()
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
 st.pyplot(fig)
 
 # Bar Chart - Rata-rata Penyewaan Berdasarkan Suhu
 st.subheader("Rata-rata Penyewaan Berdasarkan Kategori Suhu")
-MNDday_df['atemp_label'] = pd.cut(MNDday_df['atemp'], bins=[0, 0.3, 0.6, 1], labels=['Dingin', 'Sejuk', 'Panas'])
-summary_atemp = MNDday_df.groupby('atemp_label')['cnt'].mean().reset_index()
+filtered_data['atemp_label'] = pd.cut(filtered_data['atemp'], bins=[0, 0.3, 0.6, 1], labels=['Dingin', 'Sejuk', 'Panas'])
+summary_atemp = filtered_data.groupby('atemp_label')['cnt'].mean().reset_index()
 
 fig, ax = plt.subplots(figsize=(8, 5))
 sns.barplot(data=summary_atemp, x='atemp_label', y='cnt', palette='coolwarm', ax=ax)
