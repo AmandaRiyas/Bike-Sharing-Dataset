@@ -31,8 +31,8 @@ st.title("Dashboard Analisis Penyewaan Sepeda 🚲")
 category_labels = {
     "weathersit": {1: "Cerah", 2: "Berawan", 3: "Hujan"},
     "season": {1: "Semi", 2: "Panas", 3: "Gugur", 4: "Dingin"},
-    "workingday": {0: "Libur", 1: "Kerja"},
-    "holiday": {0: "Biasa", 1: "Libur"},
+    "workingday": {0: "Tidak Kerja", 1: "Kerja"},
+    "holiday": {0: "Tidak Libur", 1: "Libur"},
     "weekday": {0: "Senin", 1: "Selasa", 2: "Rabu", 3: "Kamis", 4: "Jumat", 5: "Sabtu", 6: "Minggu"}
 }
 
@@ -41,7 +41,7 @@ for col, mapping in category_labels.items():
 
 selected_season = st.sidebar.selectbox("Pilih Musim:", monthly_rentals_df['season'].unique())
 selected_weather = st.sidebar.selectbox("Pilih Cuaca:", monthly_rentals_df['weathersit'].unique())
-selected_weekday = st.sidebar.selectbox("Pilih Hari:", monthly_rentals_df['weekday'].unique())
+selected_weekday = st.sidebar.selectbox("Pilih Hari:", ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"])
 selected_holiday = st.sidebar.selectbox("Pilih Status Libur:", monthly_rentals_df['holiday'].unique())
 selected_workingday = st.sidebar.selectbox("Pilih Status Hari Kerja:", monthly_rentals_df['workingday'].unique())
 
@@ -106,8 +106,8 @@ st.pyplot(plt)
 st.subheader("Kesimpulan")
 st.markdown("""
 - **Conclusion Pertanyaan 1**
-  Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).
+  Penyewa sepeda tertinggi terjadi saat hari kerja, Jumat, cuaca cerah di musim gugur. Penyewaan terendah terjadi saat libur, Minggu, hujan ringan di musim gugur.
 
 - **Conclusion Pertanyaan 2**
-  Dari seluruh proses analisis data yang telah dilakukan kita dapat disimpulkan bahwa atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.
+  Atemp punya pengaruh kuat terhadap penyewa sepeda. Windspeed lemah dan negatif, hum hampir tidak ada korelasi.
 """)
