@@ -52,7 +52,7 @@ category_labels = {
     "season": {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
 }
 
-# Line Chart - Rentals by Category
+# Bar Chart - Rentals by Category
 st.subheader("Total Penyewaan Berdasarkan Kategori")
 categories = ['weathersit', 'weekday', 'workingday', 'holiday', 'season']
 
@@ -60,14 +60,15 @@ fig, axes = plt.subplots(3, 2, figsize=(12, 12))
 axes = axes.flatten()
 
 for i, var in enumerate(categories):
-    grouped_data = filtered_data.groupby(var)['total_rentals'].sum().reset_index()
+    grouped_data = MNDday_df.groupby(var)['cnt'].sum().reset_index()
     if var in category_labels:
         grouped_data[var] = grouped_data[var].replace(category_labels[var])
     
-    axes[i].plot(grouped_data[var], grouped_data['total_rentals'], marker='o', linestyle='-', color='g')
+    axes[i].bar(grouped_data[var], grouped_data['cnt'], color='skyblue')
     axes[i].set_title(f"Total Penyewaan Berdasarkan {var.capitalize()}")
     axes[i].set_xlabel(var.capitalize())
     axes[i].set_ylabel("Total Penyewa")
+    axes[i].tick_params(axis='x', rotation=15)
 
 if len(categories) % 2 != 0:
     fig.delaxes(axes[-1])
