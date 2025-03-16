@@ -60,7 +60,7 @@ fig, axes = plt.subplots(3, 2, figsize=(12, 12))
 axes = axes.flatten()
 
 for i, var in enumerate(categories):
-    grouped_data = MNDday_df.groupby(var)['cnt'].sum().reset_index()
+    grouped_data = filtered_data.groupby(var)['cnt'].sum().reset_index()
     if var in category_labels:
         grouped_data[var] = grouped_data[var].replace(category_labels[var])
     
