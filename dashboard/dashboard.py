@@ -25,6 +25,15 @@ monthly_rentals_df.rename(columns={
     "cnt": "total_rentals"
 }, inplace=True)
 
+# Mapping kategori
+category_labels = {
+    "weathersit": {1: "Cerah", 2: "Berawan", 3: "Hujan/Salju Ringan"},
+    "weekday": {0: "Minggu", 1: "Senin", 2: "Selasa", 3: "Rabu", 4: "Kamis", 5: "Jumat", 6: "Sabtu"},
+    "workingday": {0: "Tidak", 1: "Ya"},
+    "holiday": {0: "Tidak", 1: "Ya"},
+    "season": {1: "Spring", 2: "Summer", 3: "Fall", 4: "Winter"}
+}
+
 # Mulai Streamlit
 st.title("Dashboard Analisis Penyewaan Sepeda")
 
@@ -44,6 +53,8 @@ axes = axes.flatten()
 categorical_vars = ["weathersit", "weekday", "workingday", "holiday", "season"]
 for i, var in enumerate(categorical_vars):
     grouped_data = monthly_rentals_df.groupby(var)["total_rentals"].sum().reset_index()
+    if var in category_labels:
+        grouped_data[var] = grouped_data[var].replace(category_labels[var])
     axes[i].plot(grouped_data[var], grouped_data["total_rentals"], marker='o', linestyle='-', color='b')
     axes[i].set_title(f"Total Rentals by {var.capitalize()}")
     axes[i].set_xlabel(var.capitalize())
