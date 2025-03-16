@@ -71,6 +71,10 @@ categorical_vars = ["weathersit", "weekday", "workingday", "holiday", "season"]
 
 for i, var in enumerate(categorical_vars):
     grouped_data = monthly_rentals_df.groupby(var)["total_rentals"].sum().reset_index()
+    if var == "weekday":
+        weekday_order = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"]
+        grouped_data[var] = pd.Categorical(grouped_data[var], categories=weekday_order, ordered=True)
+        grouped_data = grouped_data.sort_values(var)
     axes[i].plot(grouped_data[var], grouped_data["total_rentals"], marker='o', linestyle='-', color='b')
     axes[i].set_title(f"Total Rentals by {var.capitalize()}")
     axes[i].set_xlabel(var.capitalize())
@@ -82,7 +86,7 @@ st.pyplot(fig)
 
 # Heatmap
 st.subheader("Heatmap Penyewaan Berdasarkan Musim dan Cuaca")
-correlation_matrix = monthly_rentals_df[['total_rentals', 'season', 'weathersit', 'weekday', 'workingday', 'holiday']].corr()
+correlation_matrix = monthly_rentals_df[['total_rentals', 'season', 'weathersit']].corr(numeric_only=True)
 plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
 plt.title("Matriks Korelasi Variabel")
