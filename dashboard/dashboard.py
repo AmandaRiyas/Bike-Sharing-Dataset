@@ -38,50 +38,20 @@ filtered_data = monthly_rentals_df[
 
 st.dataframe(filtered_data[['month', 'season', 'weathersit', 'weekday', 'workingday', 'holiday', 'total_rentals']])
 
-# Visualisasi Weathersit
-st.subheader("Distribusi Penyewaan Berdasarkan Cuaca")
-plt.figure(figsize=(8, 5))
-sns.lineplot(data=MNDday_df, x='weathersit', y='cnt', marker='o', color='orange')
-plt.title("Distribusi Cuaca")
-plt.xlabel("Cuaca")
-plt.ylabel("Jumlah Penyewa")
-st.pyplot(plt)
-
-# Visualisasi Season
-st.subheader("Distribusi Penyewaan Berdasarkan Musim")
-plt.figure(figsize=(8, 5))
-sns.lineplot(data=MNDday_df, x='season', y='cnt', marker='o', color='green')
-plt.title("Distribusi Musim")
-plt.xlabel("Musim")
-plt.ylabel("Jumlah Penyewa")
-st.pyplot(plt)
-
-# Visualisasi Weekday
-st.subheader("Distribusi Penyewaan Berdasarkan Hari")
-plt.figure(figsize=(8, 5))
-sns.lineplot(data=MNDday_df, x='weekday', y='cnt', marker='o', color='blue')
-plt.title("Distribusi Hari")
-plt.xlabel("Hari")
-plt.ylabel("Jumlah Penyewa")
-st.pyplot(plt)
-
-# Visualisasi Holiday
-st.subheader("Distribusi Penyewaan Berdasarkan Status Libur")
-plt.figure(figsize=(8, 5))
-sns.lineplot(data=MNDday_df, x='holiday', y='cnt', marker='o', color='red')
-plt.title("Distribusi Status Libur")
-plt.xlabel("Libur")
-plt.ylabel("Jumlah Penyewa")
-st.pyplot(plt)
-
-# Visualisasi Workingday
-st.subheader("Distribusi Penyewaan Berdasarkan Status Hari Kerja")
-plt.figure(figsize=(8, 5))
-sns.lineplot(data=MNDday_df, x='workingday', y='cnt', marker='o', color='purple')
-plt.title("Distribusi Hari Kerja")
-plt.xlabel("Hari Kerja")
-plt.ylabel("Jumlah Penyewa")
-st.pyplot(plt)
+# Visualisasi kategori
+fig, axes = plt.subplots(3, 2, figsize=(12, 12))
+axes = axes.flatten()
+categorical_vars = ["weathersit", "weekday", "workingday", "holiday", "season"]
+for i, var in enumerate(categorical_vars):
+    grouped_data = monthly_rentals_df.groupby(var)["total_rentals"].sum().reset_index()
+    axes[i].plot(grouped_data[var], grouped_data["total_rentals"], marker='o', linestyle='-', color='b')
+    axes[i].set_title(f"Total Rentals by {var.capitalize()}")
+    axes[i].set_xlabel(var.capitalize())
+    axes[i].set_ylabel("Total Rentals")
+if len(categorical_vars) % 2 != 0:
+    fig.delaxes(axes[-1])
+plt.tight_layout()
+st.pyplot(fig)
 
 # Heatmap Korelasi
 st.subheader("Heatmap Korelasi Variabel")
