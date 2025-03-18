@@ -60,16 +60,6 @@ workingday_mapping = {0: 'Tidak', 1: 'Ya'}
 holiday_mapping = {0: 'Tidak', 1: 'Ya'}
 season_mapping = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
 
-# Common style for all bar charts
-def create_bar_chart(data, title, color_list):
-    fig, ax = plt.subplots(figsize=(10, 5))
-    ax.bar(data.index, data['sum'], color=color_list)
-    ax.set_title(title, fontsize=15)
-    ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
-    plt.xticks(rotation=0)
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    st.pyplot(fig)
-
 # Ensure consistent category order
 weather_order = ['Cerah', 'Berawan', 'Hujan/Salju ringan']
 weekday_order = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
@@ -80,36 +70,39 @@ season_order = ['Spring', 'Summer', 'Fall', 'Winter']
 # Weather vs Count
 data['cuaca'] = data['weathersit'].map(weather_mapping)
 summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"]).reindex(weather_order)
-create_bar_chart(summary_cuaca, "Jumlah Penyewa Berdasarkan Cuaca", ["#72BCD4", "#B0BEC5", "#90A4AE"])
 
 # Weekday vs Count
 data['weekday_label'] = data['weekday'].map(weekday_mapping)
 summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"]).reindex(weekday_order)
-create_bar_chart(summary_weekday, "Jumlah Penyewa Berdasarkan Weekday", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C", "#90A4AE", "#B0BEC5", "#72BCD4"])
 
 # Workingday vs Count
 data['workingday_label'] = data['workingday'].map(workingday_mapping)
 summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"]).reindex(workingday_order)
-create_bar_chart(summary_workingday, "Jumlah Penyewa Berdasarkan Workingday", ["#72BCD4", "#B0BEC5"])
 
 # Holiday vs Count
 data['holiday_label'] = data['holiday'].map(holiday_mapping)
 summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"]).reindex(holiday_order)
-create_bar_chart(summary_holiday, "Jumlah Penyewa Berdasarkan Holiday", ["#72BCD4", "#B0BEC5"])
 
 # Season vs Count
 data['season_label'] = data['season'].map(season_mapping)
 summary_season = data.groupby('season_label')['cnt'].agg(["sum"]).reindex(season_order)
-create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C"])
 
 # Heatmap Correlation
 correlation_matrix = data[['cnt', 'atemp', 'hum', 'windspeed']].corr()
-fig, ax = plt.subplots(figsize=(8, 6))
+plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-ax.set_title("Matriks Korelasi Variabel")
-st.pyplot(fig)
+plt.title("Matriks Korelasi Variabel")
+st.pyplot(plt.gcf())
 
-# Conclusion
+# Extra Heatmap
+hubungan = data[['atemp', 'hum', 'windspeed', 'cnt']]
+correlation_matrix = hubungan.corr()
+plt.figure(figsize=(8, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+plt.title("Heatmap Korelasi Tambahan")
+st.pyplot(plt.gcf())
+
+# Kesimpulan
 st.subheader('Kesimpulan')
 st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season.")
 st.write("- atemp memiliki pengaruh kuat terhadap jumlah penyewa, windspeed berpengaruh lemah negatif, dan hum tidak berpengaruh.")
