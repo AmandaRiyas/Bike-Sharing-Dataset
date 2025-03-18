@@ -109,6 +109,14 @@ sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
 ax.set_title("Matriks Korelasi Variabel")
 st.pyplot(fig)
 
+# Temperature Bar Chart
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(data['dteday'], data['atemp'], color="#FFA726")
+ax.set_title("Perubahan Suhu Efektif Harian", fontsize=15)
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+st.pyplot(fig)
+
 # Conclusion
 st.subheader('Kesimpulan')
 st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season.")
