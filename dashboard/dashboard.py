@@ -30,9 +30,6 @@ def daily_order_df(df):
 def format_ribu(x, _):
     return f'{int(x/1e3)} Ribu' if x >= 1e3 else f'{int(x)}'
 
-def juta(x, _):
-    return f'{int(x/1e6)} Juta' if x >= 1e6 else f'{int(x/1e3)} Ribu'
-
 plt.style.use('default')  # Ensure consistent style
 
 # Sidebar for date filtering
@@ -63,65 +60,40 @@ workingday_mapping = {0: 'Tidak', 1: 'Ya'}
 holiday_mapping = {0: 'Tidak', 1: 'Ya'}
 season_mapping = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
 
+# Common style for all bar charts
+def create_bar_chart(data, title, color_list):
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(data.index, data['sum'], color=color_list)
+    ax.set_title(title, fontsize=15)
+    ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
+    plt.xticks(rotation=0)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    st.pyplot(fig)
+
 # Weather vs Count
 data['cuaca'] = data['weathersit'].map(weather_mapping)
 summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"])
-
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(summary_cuaca.index, summary_cuaca['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Cuaca", fontsize=15)
-ax.yaxis.set_major_formatter(FuncFormatter(juta))
-plt.xticks(rotation=0)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(fig)
+create_bar_chart(summary_cuaca, "Jumlah Penyewa Berdasarkan Cuaca", ["#72BCD4", "#B0BEC5", "#90A4AE"])
 
 # Weekday vs Count
 data['weekday_label'] = data['weekday'].map(weekday_mapping)
 summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"])
-
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(summary_weekday.index, summary_weekday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Weekday", fontsize=15)
-ax.yaxis.set_major_formatter(FuncFormatter(juta))
-plt.xticks(rotation=0)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(fig)
+create_bar_chart(summary_weekday, "Jumlah Penyewa Berdasarkan Weekday", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C", "#90A4AE", "#B0BEC5", "#72BCD4"])
 
 # Workingday vs Count
 data['workingday_label'] = data['workingday'].map(workingday_mapping)
 summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"])
-
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(summary_workingday.index, summary_workingday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Workingday", fontsize=15)
-ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
-plt.xticks(rotation=0)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(fig)
+create_bar_chart(summary_workingday, "Jumlah Penyewa Berdasarkan Workingday", ["#72BCD4", "#B0BEC5"])
 
 # Holiday vs Count
 data['holiday_label'] = data['holiday'].map(holiday_mapping)
 summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"])
-
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(summary_holiday.index, summary_holiday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Holiday", fontsize=15)
-ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
-plt.xticks(rotation=0)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(fig)
+create_bar_chart(summary_holiday, "Jumlah Penyewa Berdasarkan Holiday", ["#72BCD4", "#B0BEC5"])
 
 # Season vs Count
 data['season_label'] = data['season'].map(season_mapping)
 summary_season = data.groupby('season_label')['cnt'].agg(["sum"])
-
-fig, ax = plt.subplots(figsize=(10, 5))
-ax.bar(summary_season.index, summary_season['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Musim", fontsize=15)
-ax.yaxis.set_major_formatter(FuncFormatter(juta))
-plt.xticks(rotation=0)
-plt.grid(axis='y', linestyle='--', alpha=0.7)
-st.pyplot(fig)
+create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C"])
 
 # Heatmap Correlation
 correlation_matrix = data[['cnt', 'atemp', 'hum', 'windspeed']].corr()
@@ -133,3 +105,4 @@ st.pyplot(fig)
 # Conclusion
 st.subheader('Kesimpulan')
 st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season.")
+st.write("- atemp memiliki pengaruh kuat terhadap jumlah penyewa, windspeed berpengaruh lemah negatif, dan hum tidak berpengaruh.")
