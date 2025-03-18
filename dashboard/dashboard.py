@@ -70,29 +70,36 @@ def create_bar_chart(data, title, color_list):
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     st.pyplot(fig)
 
+# Ensure consistent category order
+weather_order = ['Cerah', 'Berawan', 'Hujan/Salju ringan']
+weekday_order = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu']
+workingday_order = ['Tidak', 'Ya']
+holiday_order = ['Tidak', 'Ya']
+season_order = ['Spring', 'Summer', 'Fall', 'Winter']
+
 # Weather vs Count
 data['cuaca'] = data['weathersit'].map(weather_mapping)
-summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"])
+summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"]).reindex(weather_order)
 create_bar_chart(summary_cuaca, "Jumlah Penyewa Berdasarkan Cuaca", ["#72BCD4", "#B0BEC5", "#90A4AE"])
 
 # Weekday vs Count
 data['weekday_label'] = data['weekday'].map(weekday_mapping)
-summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"])
+summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"]).reindex(weekday_order)
 create_bar_chart(summary_weekday, "Jumlah Penyewa Berdasarkan Weekday", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C", "#90A4AE", "#B0BEC5", "#72BCD4"])
 
 # Workingday vs Count
 data['workingday_label'] = data['workingday'].map(workingday_mapping)
-summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"])
+summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"]).reindex(workingday_order)
 create_bar_chart(summary_workingday, "Jumlah Penyewa Berdasarkan Workingday", ["#72BCD4", "#B0BEC5"])
 
 # Holiday vs Count
 data['holiday_label'] = data['holiday'].map(holiday_mapping)
-summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"])
+summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"]).reindex(holiday_order)
 create_bar_chart(summary_holiday, "Jumlah Penyewa Berdasarkan Holiday", ["#72BCD4", "#B0BEC5"])
 
 # Season vs Count
 data['season_label'] = data['season'].map(season_mapping)
-summary_season = data.groupby('season_label')['cnt'].agg(["sum"])
+summary_season = data.groupby('season_label')['cnt'].agg(["sum"]).reindex(season_order)
 create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C"])
 
 # Heatmap Correlation
