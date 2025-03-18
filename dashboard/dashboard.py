@@ -5,7 +5,7 @@ import seaborn as sns
 from matplotlib.ticker import FuncFormatter
 
 # Load data
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_csv('https://raw.githubusercontent.com/AmandaRiyas/Bike-Sharing-Dataset/refs/heads/main/data/day.csv')
     data['dteday'] = pd.to_datetime(data['dteday'])
