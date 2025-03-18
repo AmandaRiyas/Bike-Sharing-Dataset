@@ -53,6 +53,7 @@ plt.xticks(rotation=45, ha="right", fontsize=10)
 plt.yticks(fontsize=10)
 plt.tight_layout()
 st.pyplot(plt)
+plt.close()
 
 # Conclusion
 st.subheader('Kesimpulan')
