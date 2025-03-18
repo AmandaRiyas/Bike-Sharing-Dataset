@@ -7,8 +7,8 @@ pip install -r requirements.txt
 
 ## Setup Environment - Shell/Terminal
 ```
-mkdir Amanda_Submission_Revisi_3
-cd Amanda_Submission_Revisi_3
+mkdir Submission1_Amanda
+cd Submission1_Amanda
 pipenv install
 pipenv shell
 pip install -r requirements.txt
