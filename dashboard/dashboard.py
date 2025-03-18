@@ -55,10 +55,6 @@ plt.tight_layout()
 st.pyplot(plt)
 
 # Conclusion
-st.subheader('Conclusion')
-st.write("From the analysis, we can observe the following insights:")
-st.write("- Weather conditions and season significantly influence bike rentals.")
-st.write("- Working days show higher rental counts compared to holidays.")
-st.write("- Temperature also plays a crucial role: higher temperatures tend to attract more rentals, but extreme heat may reduce demand.")
-
-st.success('Dashboard loaded successfully! 🚀')
+st.subheader('Kesimpulan')
+st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season yaitu penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).")
+st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pengaruh dari atempt, hum, windspeed terhadap banyaknya penyewa sepeda yaitu atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif, artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.")
