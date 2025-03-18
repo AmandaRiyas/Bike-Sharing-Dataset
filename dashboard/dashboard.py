@@ -110,6 +110,32 @@ sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
 plt.title("Korelasi")
 st.pyplot(plt.gcf())
 
+# Pengaruh Suhu
+MNDday_df = data.copy()
+MNDday_df['atemp_actual'] = MNDday_df['atemp'] * 50
+average_atemp = MNDday_df['atemp_actual'].mean()
+tolerance = 2
+
+def label_temp(row):
+    if row['atemp_actual'] < (average_atemp - tolerance):
+        return 'Di Bawah Rata-rata'
+    elif (average_atemp - tolerance) <= row['atemp_actual'] <= (average_atemp + tolerance):
+        return 'Normal'
+    else:
+        return 'Di Atas Rata-rata'
+
+MNDday_df['atemp_label'] = MNDday_df.apply(label_temp, axis=1)
+summary_atemp = MNDday_df.groupby('atemp_label')['cnt'].agg(["mean"]).reset_index()
+
+plt.figure(figsize=(8, 5))
+sns.barplot(data=summary_atemp, x='atemp_label', y='mean', palette='coolwarm')
+plt.title("Rata-rata Penyewaan Berdasarkan Kategori Suhu")
+plt.xlabel("Kategori Suhu")
+plt.ylabel("Rata-rata Jumlah Penyewa")
+plt.xticks(rotation=20)
+plt.grid(axis="y", linestyle="--", alpha=0.7)
+st.pyplot(plt.gcf())
+
 # Conclusion
 st.subheader('Kesimpulan')
 st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season.")
