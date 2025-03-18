@@ -103,13 +103,12 @@ summary_season = data.groupby('season_label')['cnt'].agg(["sum"]).reindex(season
 create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C"])
 
 # Heatmap Correlation
-hubungan = MNDday_df[['atemp', 'hum', 'windspeed', 'cnt']]
+hubungan = data[['atemp', 'hum', 'windspeed', 'cnt']]
 correlation_matrix = hubungan.corr()
-print(correlation_matrix)
 plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-plt.title("Matriks Korelasi Variabel")
-plt.show()
+plt.title("Heatmap Korelasi Tambahan")
+st.pyplot(plt.gcf())
 
 # Conclusion
 st.subheader('Kesimpulan')
