@@ -85,22 +85,22 @@ create_bar_chart(summary_cuaca, "Jumlah Penyewa Berdasarkan Cuaca", ["#72BCD4", 
 # Weekday vs Count
 data['weekday_label'] = data['weekday'].map(weekday_mapping)
 summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"]).reindex(weekday_order)
-create_bar_chart(summary_weekday, "Jumlah Penyewa Berdasarkan Weekday", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C", "#90A4AE", "#B0BEC5", "#72BCD4"])
+create_bar_chart(summary_weekday, "Jumlah Penyewa Berdasarkan Weekday", ["#72BCD4", "#B0BEC5", "#90A4AE"])
 
 # Workingday vs Count
 data['workingday_label'] = data['workingday'].map(workingday_mapping)
 summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"]).reindex(workingday_order)
-create_bar_chart(summary_workingday, "Jumlah Penyewa Berdasarkan Workingday", ["#72BCD4", "#B0BEC5"])
+create_bar_chart(summary_workingday, "Jumlah Penyewa Berdasarkan Workingday", ["#72BCD4", "#B0BEC5","#90A4AE"])
 
 # Holiday vs Count
 data['holiday_label'] = data['holiday'].map(holiday_mapping)
 summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"]).reindex(holiday_order)
-create_bar_chart(summary_holiday, "Jumlah Penyewa Berdasarkan Holiday", ["#72BCD4", "#B0BEC5"])
+create_bar_chart(summary_holiday, "Jumlah Penyewa Berdasarkan Holiday", ["#72BCD4", "#B0BEC5","#90A4AE"])
 
 # Season vs Count
 data['season_label'] = data['season'].map(season_mapping)
 summary_season = data.groupby('season_label')['cnt'].agg(["sum"]).reindex(season_order)
-create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE", "#78909C"])
+create_bar_chart(summary_season, "Jumlah Penyewa Berdasarkan Musim", ["#72BCD4", "#B0BEC5", "#90A4AE"])
 
 # Heatmap Correlation
 hubungan = data[['atemp', 'hum', 'windspeed', 'cnt']]
@@ -110,30 +110,30 @@ sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
 plt.title("Korelasi")
 st.pyplot(plt.gcf())
 
-# Pengaruh Suhu
+# Suhu terasa analysis
 MNDday_df = data.copy()
 MNDday_df['atemp_actual'] = MNDday_df['atemp'] * 50
 average_atemp = MNDday_df['atemp_actual'].mean()
 tolerance = 2
 
+# Correcting labels
+
 def label_temp(row):
     if row['atemp_actual'] < (average_atemp - tolerance):
-        return 'Di Bawah Rata-rata'
-    elif (average_atemp - tolerance) <= row['atemp_actual'] <= (average_atemp + tolerance):
         return 'Normal'
+    elif (average_atemp - tolerance) <= row['atemp_actual'] <= (average_atemp + tolerance):
+        return 'Di Bawah Rata-rata'
     else:
         return 'Di Atas Rata-rata'
 
 MNDday_df['atemp_label'] = MNDday_df.apply(label_temp, axis=1)
-summary_atemp = MNDday_df.groupby('atemp_label')['cnt'].agg(["mean"]).reset_index()
+summary_atemp = MNDday_df.groupby('atemp_label')['cnt'].agg(["mean"]).sort_values('mean', ascending=False)
 
 plt.figure(figsize=(8, 5))
-sns.barplot(data=summary_atemp, x='atemp_label', y='mean', palette='coolwarm')
+sns.barplot(data=summary_atemp.reset_index(), x='atemp_label', y='mean', palette='coolwarm')
 plt.title("Rata-rata Penyewaan Berdasarkan Kategori Suhu")
 plt.xlabel("Kategori Suhu")
 plt.ylabel("Rata-rata Jumlah Penyewa")
-plt.xticks(rotation=20)
-plt.grid(axis="y", linestyle="--", alpha=0.7)
 st.pyplot(plt.gcf())
 
 # Conclusion
