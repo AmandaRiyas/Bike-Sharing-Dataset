@@ -46,15 +46,78 @@ st.write(f"Showing data from {start_date} to {end_date}")
 
 # Daily Order Chart
 daily_orders_df = daily_order_df(filtered_data)
-plt.figure(figsize=(10, 5))
-plt.plot(daily_orders_df["Date"], daily_orders_df["Jumlah Penyewa"], marker='o', linewidth=2, color="#72BCD4")
-plt.title("Penyewa Sepeda", loc="center", fontsize=20)
-plt.xticks(rotation=45, ha="right", fontsize=10)
-plt.yticks(fontsize=10)
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.plot(daily_orders_df["Date"], daily_orders_df["Jumlah Penyewa"], marker='o', linewidth=2, color="#72BCD4")
+ax.set_title("Penyewa Sepeda", loc="center", fontsize=20)
+ax.tick_params(axis='x', rotation=45, labelsize=10)
+ax.tick_params(axis='y', labelsize=10)
 plt.tight_layout()
-st.pyplot(plt)
+st.pyplot(fig)
+
+# Mappings
+weather_mapping = {1: 'Cerah', 2: 'Berawan', 3: 'Hujan/Salju ringan'}
+weekday_mapping = {0: 'Minggu', 1: 'Senin', 2: 'Selasa', 3: 'Rabu', 4: 'Kamis', 5: 'Jumat', 6: 'Sabtu'}
+workingday_mapping = {0: 'Tidak', 1: 'Ya'}
+holiday_mapping = {0: 'Tidak', 1: 'Ya'}
+season_mapping = {1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'}
+
+# Weather vs Count
+data['cuaca'] = data['weathersit'].map(weather_mapping)
+summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"])
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(summary_cuaca.index, summary_cuaca['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
+ax.set_title("Jumlah Penyewa Berdasarkan Cuaca")
+ax.yaxis.set_major_formatter(FuncFormatter(juta))
+st.pyplot(fig)
+
+# Weekday vs Count
+data['weekday_label'] = data['weekday'].map(weekday_mapping)
+summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"])
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(summary_weekday.index, summary_weekday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
+ax.set_title("Jumlah Penyewa Berdasarkan Weekday")
+ax.yaxis.set_major_formatter(FuncFormatter(juta))
+st.pyplot(fig)
+
+# Workingday vs Count
+data['workingday_label'] = data['workingday'].map(workingday_mapping)
+summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"])
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(summary_workingday.index, summary_workingday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
+ax.set_title("Jumlah Penyewa Berdasarkan Workingday")
+ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
+st.pyplot(fig)
+
+# Holiday vs Count
+data['holiday_label'] = data['holiday'].map(holiday_mapping)
+summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"])
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(summary_holiday.index, summary_holiday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
+ax.set_title("Jumlah Penyewa Berdasarkan Holiday")
+ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
+st.pyplot(fig)
+
+# Season vs Count
+data['season_label'] = data['season'].map(season_mapping)
+summary_season = data.groupby('season_label')['cnt'].agg(["sum"])
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.bar(summary_season.index, summary_season['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
+ax.set_title("Jumlah Penyewa Berdasarkan Musim")
+ax.yaxis.set_major_formatter(FuncFormatter(juta))
+st.pyplot(fig)
+
+# Heatmap Correlation
+correlation_matrix = data[['cnt', 'atemp', 'hum', 'windspeed']].corr()
+fig, ax = plt.subplots(figsize=(8, 6))
+sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
+ax.set_title("Matriks Korelasi Variabel")
+st.pyplot(fig)
 
 # Conclusion
 st.subheader('Kesimpulan')
-st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season yaitu penyewa sepeda tertinggi terjadi ketika workingday (tidak dalam masa holiday) terutama pada hari Jumat ketika cuaca cerah di musim gugur (Fall). Penyewaan sepeda terendah terjadi ketika bukan workingday (holiday) terutama hari Minggu ketika cuaca hujan/salju ringan di musim gugur (Fall).")
-st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pengaruh dari atempt, hum, windspeed terhadap banyaknya penyewa sepeda yaitu atemp memiliki pengaruh yang kuat terhadap jumlah penyewa sepeda, semakin tinggi atemp maka semakin tinggi pula jumlah penyewa sepeda. Windspeed hanya memiliki korelasi lemah dan negatif, artinya setiap windspeed meningkat akan sedikit menurunkan jumlah penyewa sepeda, dan kelembaban (hum) tidak memiliki korelasi dengan jumlah penyewa sepeda.")
+st.write("- Dari seluruh proses analisis data yang telah dilakukan dapat disimpulkan pola penyewaan sepeda berdasarkan kondisi cuaca, weekday, workingday, holiday, dan season.")
