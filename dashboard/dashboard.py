@@ -107,7 +107,7 @@ hubungan = data[['atemp', 'hum', 'windspeed', 'cnt']]
 correlation_matrix = hubungan.corr()
 plt.figure(figsize=(8, 6))
 sns.heatmap(correlation_matrix, annot=True, cmap="coolwarm", linewidths=0.5)
-plt.title("Heatmap Korelasi Tambahan")
+plt.title("Korelasi")
 st.pyplot(plt.gcf())
 
 # Conclusion
