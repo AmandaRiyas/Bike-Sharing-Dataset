@@ -33,6 +33,8 @@ def format_ribu(x, _):
 def juta(x, _):
     return f'{int(x/1e6)} Juta' if x >= 1e6 else f'{int(x/1e3)} Ribu'
 
+plt.style.use('default')  # Ensure consistent style
+
 # Sidebar for date filtering
 st.sidebar.header('Filter Data')
 start_date = st.sidebar.date_input('Start date', data['dteday'].min().date())
@@ -67,8 +69,10 @@ summary_cuaca = data.groupby('cuaca')['cnt'].agg(["sum"])
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.bar(summary_cuaca.index, summary_cuaca['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Cuaca")
+ax.set_title("Jumlah Penyewa Berdasarkan Cuaca", fontsize=15)
 ax.yaxis.set_major_formatter(FuncFormatter(juta))
+plt.xticks(rotation=0)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 st.pyplot(fig)
 
 # Weekday vs Count
@@ -77,8 +81,10 @@ summary_weekday = data.groupby('weekday_label')['cnt'].agg(["sum"])
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.bar(summary_weekday.index, summary_weekday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Weekday")
+ax.set_title("Jumlah Penyewa Berdasarkan Weekday", fontsize=15)
 ax.yaxis.set_major_formatter(FuncFormatter(juta))
+plt.xticks(rotation=0)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 st.pyplot(fig)
 
 # Workingday vs Count
@@ -87,8 +93,10 @@ summary_workingday = data.groupby('workingday_label')['cnt'].agg(["sum"])
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.bar(summary_workingday.index, summary_workingday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Workingday")
+ax.set_title("Jumlah Penyewa Berdasarkan Workingday", fontsize=15)
 ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
+plt.xticks(rotation=0)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 st.pyplot(fig)
 
 # Holiday vs Count
@@ -97,8 +105,10 @@ summary_holiday = data.groupby('holiday_label')['cnt'].agg(["sum"])
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.bar(summary_holiday.index, summary_holiday['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Holiday")
+ax.set_title("Jumlah Penyewa Berdasarkan Holiday", fontsize=15)
 ax.yaxis.set_major_formatter(FuncFormatter(format_ribu))
+plt.xticks(rotation=0)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 st.pyplot(fig)
 
 # Season vs Count
@@ -107,8 +117,10 @@ summary_season = data.groupby('season_label')['cnt'].agg(["sum"])
 
 fig, ax = plt.subplots(figsize=(10, 5))
 ax.bar(summary_season.index, summary_season['sum'], color=["#72BCD4", "#B0BEC5", "#90A4AE"])
-ax.set_title("Jumlah Penyewa Berdasarkan Musim")
+ax.set_title("Jumlah Penyewa Berdasarkan Musim", fontsize=15)
 ax.yaxis.set_major_formatter(FuncFormatter(juta))
+plt.xticks(rotation=0)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
 st.pyplot(fig)
 
 # Heatmap Correlation
